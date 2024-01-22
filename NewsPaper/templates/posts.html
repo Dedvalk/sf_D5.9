@@ -1,0 +1,35 @@
+
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+News
+{% endblock title %}
+
+{% block content %}
+    <h1>Все новости</h1>
+    <h3>{% current_time '%b %d %Y %A' %}</h3>
+    <!-- <h3> {{ next_post|default_if_none:"Чуть позже сообщим о обновлении!" }} </h3> -->
+        {% if posts %}
+            <table align="center">
+                <tr>
+                    <td>Название</td>
+                    <td>Содержимое</td>
+                    <td>Дата добавления</td>
+                    <td>Рейтинг</td>
+                </tr>
+                {% for post in posts %}
+                <tr>
+                    <td>{{ post.title | censor }}</td>
+                    <td>{{ post.content | censor | truncatechars:20  }}</td>
+                    <td>{{ post.creation_date }}</td>
+                    <td>{{ post.rating }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        <div >Всего постов: {{ posts | length }}</div>
+        {% else %}
+            <h2> Новостей нет!</h2>
+        {% endif %}
+{% endblock content %}
