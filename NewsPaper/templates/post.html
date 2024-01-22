@@ -6,8 +6,8 @@ Post
 {% endblock title %}
 
 {% block content %}
-<h3> {{ post.type }} | {{ post.title | censor }} </h3>
-<div>{{ post.content | censor }}</div>
+<h3> {{ post.get_type_display }} : {{ post.title | censor }} </h3>
+<div> {{ post.content | censor }} </div>
 <div align="right">
     <p>Автор: {{ post.author.user}} (рейтинг: {{ post.rating }})</p>
     <p>{{ post.creation_date | date:'d.m.Y' }}</p>
