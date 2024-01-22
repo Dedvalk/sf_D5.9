@@ -30,8 +30,9 @@ def currency(value, code='rub'):
 
 @register.filter()
 def censor(data):
-    result = ''
-    print(data.split())
     for pattern in STOP_WORDS:
-        data = re.sub(pattern, pattern[0] + '*'*(len(pattern)-1),  data)
+        try:
+            data = re.sub(pattern, pattern[0] + '*'*(len(pattern)-1),  data)
+        except TypeError:
+            print("Фильтр применяется не к строке! Должна быть строка!")
     return f'{data}'
