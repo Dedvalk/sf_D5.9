@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 article = 'A'
 news = 'N'
@@ -13,6 +14,9 @@ class Author(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     rating = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.user.username
 
     def update_rating(self):
         articles_rating = 0
@@ -67,6 +71,9 @@ class Post(models.Model):
 
     def __str__(self):
         return f'{self.title.title()}: {self.content[:20]}'
+
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
 
 
 class PostCategory(models.Model):

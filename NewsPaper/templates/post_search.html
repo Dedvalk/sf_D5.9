@@ -1,0 +1,27 @@
+
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+Search
+{% endblock title %}
+
+{% block content %}
+    <h1>Поиск новости</h1>
+    <hr>
+    <br>
+    <form action="/newsportal/news" method="GET">
+        <div>
+            <div>Название: {{ filterset.form.title }}</div>
+            <div>Автор: {{ filterset.form.author__user__username }}</div>
+            <div>Дата создания: {{ filterset.form.creation_date }}</div>
+        </div>
+       <div>
+           <input type="submit" value="Найти"/>
+       </div>
+
+    </form>
+
+
+{% endblock content %}

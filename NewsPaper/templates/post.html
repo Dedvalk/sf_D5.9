@@ -7,6 +7,7 @@ Post
 
 {% block content %}
 <h3> {{ post.get_type_display }} : {{ post.title | censor }} </h3>
+<br>
 <div> {{ post.content | censor }} </div>
 <div align="right">
     <p>Автор: {{ post.author.user}} (рейтинг: {{ post.rating }})</p>
