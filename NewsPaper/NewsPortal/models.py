@@ -1,6 +1,10 @@
+from django.contrib.auth.forms import UserCreationForm
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django import forms
+from allauth.account.forms import SignupForm
+from django.contrib.auth.models import Group
 
 article = 'A'
 news = 'N'
@@ -70,7 +74,7 @@ class Post(models.Model):
             return self.content
 
     def __str__(self):
-        return f'{self.title.title()}: {self.content[:20]}'
+        return f'{self.title.title()}: {self.content[:20]} by {self.author_id}'
 
     def get_absolute_url(self):
         return reverse('post_detail', args=[str(self.id)])
@@ -98,3 +102,28 @@ class Comment(models.Model):
     def dislike(self):
         self.rating -= 1
         self.save()
+
+
+class BaseRegisterForm(UserCreationForm):
+
+    email = forms.EmailField(label = "Email")
+    first_name = forms.CharField(label = "Имя")
+    last_name = forms.CharField(label = "Фамилия")
+
+    class Meta:
+        model = User
+        fields = ("username",
+                  "first_name",
+                  "last_name",
+                  "email",
+                  "password1",
+                  "password2", )
+
+
+class BasicSignupForm(SignupForm):
+
+    def save(self, request):
+        user = super(BasicSignupForm, self).save(request)
+        basic_group = Group.objects.get(name='common')
+        basic_group.user_set.add(user)
+        return user

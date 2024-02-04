@@ -8,4 +8,5 @@ urlpatterns = [
     # path('news/', include('NewsPortal.urls')),
     # path('articles/', include('NewsPortal.urls')),
     path('newsportal/', include('NewsPortal.urls')),
+    path('accounts/', include('allauth.urls')),
 ]

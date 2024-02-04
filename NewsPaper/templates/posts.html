@@ -8,7 +8,13 @@ Posts
 {% endblock title %}
 
 {% block content %}
-    <h1>Все посты</h1>
+    {% if posttype == 'news' %}
+        <h1>Все новости</h1>
+    {% elif posttype == 'articles' %}
+        <h1>Все статьи</h1>
+    {% else %}
+        <h1>Все посты</h1>
+    {% endif %}
     <hr>
     <!-- <h3>{% current_time '%b %d %Y %A' %}</h3> -->
     <!-- <h3> {{ next_post|default_if_none:"Чуть позже сообщим о обновлении!" }} </h3> -->

@@ -13,8 +13,3 @@ class PostFilter(FilterSet):
 
         model = Post
         fields = ['title', 'author__user__username', 'creation_date']
-        # fields = {
-        #    'title': ['icontains'],
-        #    'type': ['exact'],
-        #    'rating': ['gt']
-        # }

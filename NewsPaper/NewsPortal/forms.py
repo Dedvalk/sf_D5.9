@@ -1,7 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Post
+from .models import Post, Author
+
 
 class PostForm(forms.ModelForm):
 
@@ -30,3 +31,10 @@ class PostForm(forms.ModelForm):
 
         return cleaned_data
 
+# class AuthorForm(forms.ModelForm):
+#
+#     pass
+#     class Meta:
+#
+#        model = Author
+#        pass
