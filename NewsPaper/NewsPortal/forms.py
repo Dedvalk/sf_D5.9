@@ -13,7 +13,8 @@ class PostForm(forms.ModelForm):
            'title',
            'content',
            #'type',
-           'author'
+           #'author',
+           'categories'
        ]
     def clean(self):
         cleaned_data = super().clean()

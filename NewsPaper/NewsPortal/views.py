@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 
 from .forms import PostForm
-from .models import Post, BaseRegisterForm
+from .models import Post, Author, BaseRegisterForm, Category, CategorySubscriber
 from datetime import datetime, UTC
 from .filters import PostFilter
 from django.shortcuts import render
@@ -82,7 +82,7 @@ class PostCreate(PermissionRequiredMixin, CreateView):
 
         post = form.save(commit=False)
         type = self.request.path.split('/')[2]
-        #post.author_id = 6#self.request.user.pk
+        post.author_id = Author.objects.filter(user=self.request.user.pk).first().pk
         if type == 'articles':
             post.type = 'A'
         elif type == 'news':
@@ -144,6 +144,24 @@ class IndexView(LoginRequiredMixin, TemplateView):
         context['is_not_author'] = not self.request.user.groups.filter(name='authors').exists()
         return context
 
+class CategoriesList(ListView):
+
+    model = Category
+    template_name = 'categories.html'
+    context_object_name = 'categories'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        #subscribed = Category.objects.filter(subscribers__user=self.request.user)
+        categories = Category.objects.all()
+        context['subscribed'] = []
+        for category in categories:
+            if category.subscribers.filter(id=self.request.user.id):
+                context['subscribed'].append(category.pk)
+        #context['is_subscribed'] = self.request.user not in self.category.subscribers.all()
+        #context['category'] = self.category
+        return context
+
 # def create_post(request):
 #     form = PostForm()
 #     if request.method == 'POST':
@@ -157,7 +175,35 @@ class IndexView(LoginRequiredMixin, TemplateView):
 @login_required
 def upgrade_me(request):
     user = request.user
+    author = Author()
     author_group = Group.objects.get(name='authors')
     if not request.user.groups.filter(name='authors').exists():
         author_group.user_set.add(user)
+        author.user = user
+        author.rating = 0
+        author.save()
     return redirect('/newsportal/index')
+
+@login_required
+def subscribe(request, category_id):
+
+    cat_subs = CategorySubscriber()
+    cat_subs.category = Category.objects.get(id=category_id)
+    cat_subs.user = request.user
+    cat_subs.save()
+    return redirect('/newsportal/categories')
+
+@login_required
+def unsubscribe(request, category_id):
+
+    print('FFFFFFFFF')
+    user = request.user
+    print('attributes ',user, category_id)
+    cat_subs = CategorySubscriber.objects.filter(user=user, category_id=category_id)
+    print('удаляем ', cat_subs)
+    cat_subs.delete()
+    return redirect('/newsportal/categories')
+
+
+
+

@@ -1,0 +1,39 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+    Categories
+{% endblock title %}
+
+{% block content %}
+
+    <h1>Категории</h1>
+    <hr>
+      {% if categories %}
+            <table align="center">
+                <tr>
+                    <td>№</td>
+                    <td>Наименование</td>
+                    <td>Статус подписки</td>
+                </tr>
+                {% for category in categories %}
+                <tr>
+                    <td>{{ category.id }}</td>
+                    <td>{{ category.name  }}</td>
+                    <td>
+                        {% if category.id in subscribed %}
+                            <b color="red">Вы подписаны</b>/<a href="{% url 'unsubscribe' category_id=category.id %}">Отписаться</a>
+                        {% else %}
+                            <a href="{% url 'subscribe' category_id=category.id %}">Подписаться</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+
+        {% else %}
+
+        {% endif %}
+
+
+{% endblock content %}

@@ -28,9 +28,9 @@ Posts
        <div>
            <input type="submit" value="Найти" />
        </div>
--->
-    </form>
 
+    </form>
+-->
         {% if posts %}
             <table align="center">
                 <tr>
@@ -38,6 +38,7 @@ Posts
                     <td>Содержимое</td>
                     <td>Дата добавления</td>
                     <td>Рейтинг</td>
+                    <td>Категории</td>
                 </tr>
                 {% for post in posts %}
                 <tr>
@@ -45,6 +46,7 @@ Posts
                     <td>{{ post.content | censor | truncatechars:20  }}</td>
                     <td>{{ post.creation_date }}</td>
                     <td>{{ post.rating }}</td>
+                    <td>{% category_list post.categories.all %}</td>
                 </tr>
                 {% endfor %}
             </table>

@@ -4,19 +4,31 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
+
 register = template.Library()
 
 
 @register.simple_tag()
 def current_time(format_string='%b %d %Y'):
+
     return datetime.now().strftime(format_string)
 
 @register.simple_tag(takes_context=True)
 def url_replace(context, **kwargs):
+
     d = context['request'].GET.copy()
     for k, v in kwargs.items():
         d[k] = v
     return d.urlencode()
+
+@register.simple_tag()
+def category_list(categories):
+
+    clist = [category.name for category in categories]
+    return ', '.join(clist)
+
+
+
 
 
 
