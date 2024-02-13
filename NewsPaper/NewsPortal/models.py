@@ -66,7 +66,7 @@ class Post(models.Model):
             return self.content
 
     def __str__(self):
-        return f'{self.title.title()}: {self.content[:20]} by {self.author_id}'
+        return f'{self.title.title()}: {self.content[:20]} by {self.author.user.username}'
 
     def get_absolute_url(self):
         return reverse('post_detail', args=[str(self.id)])

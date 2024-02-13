@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Публикации за неделю</title>
+</head>
+<body>
+    <h2>Добрый день, {{ username }}!</h2>
+    <p>За последнюю неделю вышли новые публикации из категории {{ category }}.</p>
+    <hr>
+    <ul>
+        {% for post in posts %}
+         <li>{{ post.title }}: {{ post.content | truncatechars:50 }} (<a href="{{ url }}{{ post.pk }}">подробнее</a>)</li>
+        {% endfor %}
+    </ul>
+    <hr>
+</body>
+</html>

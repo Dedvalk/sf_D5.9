@@ -27,6 +27,17 @@ def category_list(categories):
     clist = [category.name for category in categories]
     return ', '.join(clist)
 
+@register.simple_tag(takes_context=True)
+def post_url(context, **kwargs):
+
+    d = ''
+    for k, v in kwargs.items():
+        print('kwarg->', k, ':', v)
+        if k == 'post_id':
+            d = f'newsportal/{v}'
+    print(d)
+    return d
+
 
 
 

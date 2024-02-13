@@ -1,8 +1,12 @@
+import os
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import User, Group
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
@@ -12,6 +16,11 @@ from .models import Post, Author, BaseRegisterForm, Category, CategorySubscriber
 from datetime import datetime, UTC
 from .filters import PostFilter
 from django.shortcuts import render
+
+
+JUST_EMAIL = os.getenv('JUST_EMAIL')
+JUST_ANOTHER_EMAIL = os.getenv('JUST_ANOTHER_EMAIL')
+LOCAL_HOST = os.getenv('LOCALHOST')
 
 class PostsList(ListView):
 
@@ -87,7 +96,32 @@ class PostCreate(PermissionRequiredMixin, CreateView):
             post.type = 'A'
         elif type == 'news':
             post.type = 'N'
-        return super().form_valid(form)
+
+        response = super().form_valid(form)
+
+        subscribers = []
+        categories = post.categories.all()
+        for category in categories:
+            subs = category.subscribers.all()
+            for sub in subs:
+                subscribers.append(sub.email)
+
+        html_content = render_to_string('post_created.html',
+                                        {
+                                            'post': post,
+                                            'url': f'{LOCAL_HOST}/newsportal/{post.pk}'
+                                        })
+
+        msg = EmailMultiAlternatives(
+            subject=f'{post.title}',
+            body=post.content,
+            from_email=JUST_ANOTHER_EMAIL,
+            to=subscribers,
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+        return response
 
 
 class PostEdit(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
@@ -141,6 +175,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['categories'] = CategorySubscriber.objects.filter(user=self.request.user)
         context['is_not_author'] = not self.request.user.groups.filter(name='authors').exists()
         return context
 
@@ -174,6 +209,7 @@ class CategoriesList(ListView):
 
 @login_required
 def upgrade_me(request):
+
     user = request.user
     author = Author()
     author_group = Group.objects.get(name='authors')
@@ -191,18 +227,34 @@ def subscribe(request, category_id):
     cat_subs.category = Category.objects.get(id=category_id)
     cat_subs.user = request.user
     cat_subs.save()
+
+    send_mail(
+        subject=f'NewsPortal: подписка на категорию',
+        message=f'Добрый день!\nВы подписаны на категорию {cat_subs.category.name}!',
+        from_email=JUST_ANOTHER_EMAIL,
+        recipient_list=[request.user.email]
+    )
+
     return redirect('/newsportal/categories')
 
 @login_required
 def unsubscribe(request, category_id):
 
-    print('FFFFFFFFF')
     user = request.user
-    print('attributes ',user, category_id)
+    category = Category.objects.get(id=category_id)
     cat_subs = CategorySubscriber.objects.filter(user=user, category_id=category_id)
-    print('удаляем ', cat_subs)
     cat_subs.delete()
+
+    send_mail(
+        subject=f'NewsPortal: подписка на категорию',
+        message=f'Добрый день!\nВы отписаны от категории {category.name}!',
+        from_email=JUST_ANOTHER_EMAIL,
+        recipient_list=[request.user.email]
+    )
+
     return redirect('/newsportal/categories')
+
+
 
 
 

@@ -2,7 +2,17 @@
 
 {% block content %}
 <h2>Страница авторизованного пользователя {{request.user.username}}</h2>
-<div> Здесь может содержаться персональная информация для каждого пользователя </div>
+<div>
+    {% if categories %}
+        <p>Вы подписаны на следующие категории:</p>
+        {% for category in categories %}
+        {{ category.category }}
+        {% endfor %}
+    {% else %}
+        <p>Вы не подписаны ни на одну из категорий:</p>
+        <a href="/newsportal/categories"> Подписаться на категории</a>
+    {% endif %}
+</div>
 {% if is_not_author %}
 <button> <a href="/newsportal/upgrade/"> Хочу быть автором!</a> </button>
 {% endif %}

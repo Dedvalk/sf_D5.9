@@ -31,13 +31,13 @@
                    </a>
                </li>
                <li class="nav-item">
-                   <a class="nav-link" href="/newsportal/news">News</a>
+                   <a class="nav-link" href="/newsportal/news">Новости</a>
                </li>
                <li class="nav-item">
-                   <a class="nav-link" href="/newsportal/articles">Articles</a>
+                   <a class="nav-link" href="/newsportal/articles">Статьи</a>
                </li>
                <li class="nav-item">
-                   <a class="nav-link" href="/newsportal/categories">Categories</a>
+                   <a class="nav-link" href="/newsportal/categories">Категории</a>
                </li>
                {% if request.user.is_authenticated %}
                <li class="nav-item">
@@ -51,6 +51,13 @@
 
            </ul>
        </div>
+       <a class="navbar-brand" href="/newsportal/index">{{request.user.username}}</a>
+       <button class="navbar-toggler" type="button" data-toggle="collapse"
+               data-target="#navbarResponsive"
+               aria-controls="navbarResponsive" aria-expanded="false"
+               aria-label="Toggle navigation">
+           <span class="navbar-toggler-icon"></span>
+       </button>
    </div>
 </nav>
         <!-- Page content-->

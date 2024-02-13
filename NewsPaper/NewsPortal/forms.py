@@ -32,10 +32,3 @@ class PostForm(forms.ModelForm):
 
         return cleaned_data
 
-# class AuthorForm(forms.ModelForm):
-#
-#     pass
-#     class Meta:
-#
-#        model = Author
-#        pass
