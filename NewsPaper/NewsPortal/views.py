@@ -16,7 +16,7 @@ from .models import Post, Author, BaseRegisterForm, Category, CategorySubscriber
 from datetime import datetime, UTC
 from .filters import PostFilter
 from django.shortcuts import render
-
+from .tasks import post_creation_notify
 
 JUST_EMAIL = os.getenv('JUST_EMAIL')
 JUST_ANOTHER_EMAIL = os.getenv('JUST_ANOTHER_EMAIL')
@@ -97,29 +97,31 @@ class PostCreate(PermissionRequiredMixin, CreateView):
         elif type == 'news':
             post.type = 'N'
 
+        post.save()
+        post_creation_notify.apply_async([post.pk], countdown=5)
         response = super().form_valid(form)
 
-        subscribers = []
-        categories = post.categories.all()
-        for category in categories:
-            subs = category.subscribers.all()
-            for sub in subs:
-                subscribers.append(sub.email)
-
-        html_content = render_to_string('post_created.html',
-                                        {
-                                            'post': post,
-                                            'url': f'{LOCAL_HOST}/newsportal/{post.pk}'
-                                        })
-
-        msg = EmailMultiAlternatives(
-            subject=f'{post.title}',
-            body=post.content,
-            from_email=JUST_ANOTHER_EMAIL,
-            to=subscribers,
-        )
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
+        # subscribers = []
+        # categories = post.categories.all()
+        # for category in categories:
+        #     subs = category.subscribers.all()
+        #     for sub in subs:
+        #         subscribers.append(sub.email)
+        #
+        # html_content = render_to_string('post_created.html',
+        #                                 {
+        #                                     'post': post,
+        #                                     'url': f'{LOCAL_HOST}/newsportal/{post.pk}'
+        #                                 })
+        #
+        # msg = EmailMultiAlternatives(
+        #     subject=f'{post.title}',
+        #     body=post.content,
+        #     from_email=JUST_ANOTHER_EMAIL,
+        #     to=subscribers,
+        # )
+        # msg.attach_alternative(html_content, "text/html")
+        # msg.send()
 
         return response
 
